@@ -3,12 +3,11 @@
 import os
 import sys
 
-sys.path.append ('Transcrypt/modules/org/transcrypt')
-import __base__
+from transcrypt.modules.org.transcrypt import __base__
 
 from setuptools import setup
 
-def read (*paths):
+def read(*paths):
 	with open (os.path.join (*paths), 'r') as aFile:
 		return aFile.read()
 
