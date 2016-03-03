@@ -25,9 +25,12 @@ setup (
 	license = 'Apache 2.0',
 	author = 'Jacques de Hooge',
 	author_email = 'jacques.de.hooge@qquick.org',
-	packages = ['transcrypt'],	
+	packages = ['transcrypt'],
 	include_package_data = True,
 	zip_safe = False,
+	entry_points = {
+		'console_scripts': ['transcrypt = transcrypt.__main__:__main__']
+	},
 	classifiers = [
 		'Development Status :: 3 - Alpha',
 		'Intended Audience :: Developers',
