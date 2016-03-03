@@ -20,43 +20,64 @@ import copy
 import datetime
 import shutil
 import traceback
+import pkg_resources
 
 from org.transcrypt import __base__, utils, minify, static_check
 
 class ModuleMetadata:
-	def __init__ (self, program, name):
+	def __init__(self, program, name):
 		self.name = name
 		searchedModulePaths = []
-		for searchDir in program.moduleSearchDirs:
-			relPrepath = self.name.replace ('.', '/')
-			prepath = '{}/{}'.format (searchDir, relPrepath)			
-			self.isDir = os.path.isdir (prepath)
+		
+		def prepare(prepath, searched):
+			if not prepath:
+				return
+			
+			# This closure reduces code duplication due to the two main code paths below.
+			self.isDir = os.path.isdir(prepath)
 			
 			if self.isDir:
 				self.sourceDir = prepath
 				self.filePrename = '__init__'
-			else:				
-				self.sourceDir, self.filePrename = prepath.rsplit ('/', 1)
-							
+			else:
+				self.sourceDir, _, self.filePrename = prepath.rpartition('/')
+			
 			# Target dir should be the JavaScript subdir of the sourceDir
-			self.targetDir = '{}/{}'.format (self.sourceDir, __base__.__envir__.targetSubDir)
+			self.targetDir = '{}/{}'.format(self.sourceDir, __base__.__envir__.targetSubDir)
+			self.sourcePath = '{}/{}.py'.format(self.sourceDir, self.filePrename)
+			self.targetPath = '{}/{}.mod.js'.format(self.targetDir, self.filePrename)
 			
-			self.sourcePath = '{}/{}.py' .format (self.sourceDir, self.filePrename)
-			self.targetPath = '{}/{}.mod.js'.format (self.targetDir, self.filePrename)
+			searched += [self.sourcePath, self.targetPath]
 			
-			searchedModulePaths += [self.sourcePath, self.targetPath]
+			return os.path.isfile(self.sourcePath) or os.path.isfile(self.targetPath)
+		
+		# Attempt to short-circuit through direct lookup.
+		
+		try:
+			package = '.'.join(name.split('.')[:-1])
+			if '.' in self.name and prepare(pkg_resources.resource_filename(package, name.split('.')[-1]), searchedModulePaths):
+				return
 			
-			if (os.path.isfile (self.sourcePath) or os.path.isfile (self.targetPath)):
-				break;	
-		else:
-			# If even the target can't be loaded then there's a problem with this module, root or not
-			raise utils.Error (
-				moduleName = self.name,
-				message = '\n\tAttempt to load module: {}\n\tCan\'t find any of:\n\t\t{}\n'.format (
-					self.name, '\n\t\t'. join (searchedModulePaths)
-				)
+		except ImportError:  # Not an importable package reference.
+			pass
+		
+		# Fall back on exhaustive search.
+		
+		for searchDir in program.moduleSearchDirs:
+			relPrepath = self.name.replace ('.', '/')
+			if prepare('{}/{}'.format(searchDir, relPrepath), searchedModulePaths):
+				utils.log(False, 'Module import evaluated through exhaustive search: {}\n', name)
+				return
+		
+		# If even the target can't be loaded then there's a problem with this module, root or not.
+		
+		raise utils.Error(
+			moduleName = self.name,
+			message = '\n\tAttempt to load module: {}\n\tCan\'t find any of:\n\t\t{}\n'.format(
+				self.name, '\n\t\t'. join (searchedModulePaths)
 			)
-			
+		)
+	
 	def sourceExists (self):
 		return os.path.isfile (self.sourcePath)
 		
