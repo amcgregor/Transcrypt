@@ -17,58 +17,72 @@
 import os
 import sys
 import traceback
+import pkg_resources
 
-sys.path [0] = sys.path [0] + '/modules'
+
+modulesDir = pkg_resources.resource_filename('transcrypt', 'modules')  # Maybe need .replace('\\', '/') for Windows ?
+
+# Inject our custom heirarchy before other paths.
+# Now loaded dynamically from wherever we happen to be installed.
+# Import time side-effects are bad, but not sure how to avoid this.
+sys.path.insert(0, modulesDir)
+
 
 from org.transcrypt import __base__
 from org.transcrypt import utils
 from org.transcrypt import compiler
 
-programDir = os.getcwd () .replace ('\\', '/')
-transpilerDir = os.path.dirname (os.path.abspath (__file__)) .replace ('\\', '/')	
-modulesDir = '{}/modules'.format (transpilerDir)
 
-licencePath = '{}/{}'.format (transpilerDir, '../license_reference.txt')	
-if not os.path.isfile (licencePath):
-	utils.log (True, 'Error: missing license reference file\n')
-	exit (1)
+def __main__():
+	# TODO: Avoid this, accept a base path on the CLI.
+	programDir = os.getcwd().replace('\\', '/')
 	
-utils.log (True, '{} (TM) Python to JavaScript Small Sane Subset Transpiler Version {}\n', __base__.__envir__.transpilerName.capitalize (), __base__.__envir__.transpilerVersion)
-utils.log (True, 'Copyright (C) Geatec Engineering. License: Apache 2.0\n\n')
-	
-utils.commandArgs.parse ()
-	
-if utils.commandArgs.license:
-	with open (licensePath) as licenseFile:
+	utils.log(True,
+			'{} (TM) Python to JavaScript Small Sane Subset Transpiler Version {}\n',
+			__base__.__envir__.transpilerName.capitalize(),
+			__base__.__envir__.transpilerVersion
+		)
+	utils.log(True, 'Copyright (C) Geatec Engineering. License: Apache 2.0\n\n')
+		
+	utils.commandArgs.parse()
+		
+	if utils.commandArgs.license:
 		bar = 80 * '='
 		utils.log (True, '\n{}\n\n', bar)
-		utils.log (True, '{}\n', licenseFile.read ())
+		utils.log (True, '{}\n', pkg_resources.resource_string('transcrypt', 'license_reference.txt').decode('utf8'))
 		utils.log (True, '{}\n\n', bar)
-		
-if not utils.commandArgs.source:
-	exit (0)
-		
-if utils.commandArgs.run:
-	with open (utils.commandArgs.source) as sourceFile:
-		exec (
-			'import sys\n' +
-			'sys.path [0] = sys.path [1 : ]\n' +	# "import transcrypt" should refer to library rather than to this file
-			'sys.path.append (\'{}\')\n'.format (modulesDir) +
-			sourceFile.read ()
-		)
-else:
+			
+	if not utils.commandArgs.source:
+		exit (0)
+			
+	if utils.commandArgs.run:
+		with open(utils.commandArgs.source) as sourceFile:
+			exec(
+				'import sys\n' +
+				#'sys.path [0] = sys.path [1 : ]\n' +	# "import transcrypt" should refer to library rather than to this file
+				#'sys.path.append (\'{}\')\n'.format (modulesDir) +
+				sourceFile.read()
+			)
+		exit(0)
+	
 	try:
-		compiler.Program ([programDir, modulesDir])
+		compiler.Program([programDir, modulesDir])
+	
 	except utils.Error as error:
-		utils.log (True, '\n{}\n', error)
+		utils.log(True, '\n{}\n', error)
 		
 		# Don't log anything else, even in verbose mode, since this would only be confusing
 		if utils.debug:
-			utils.log (True, '{}\n', traceback.format_exc ())
+			utils.log(True, '{}\n', traceback.format_exc())
+	
 	except Exception as exception:
-		utils.log (True, '\n{}', exception)
+		utils.log(True, '\n{}', exception)
 		
 		# Have to log something else, because a general exception isn't informative enough
-		utils.log (False, '{}\n', traceback.format_exc ())
-	utils.log (True, 'Ready\n')
-		
+		utils.log(False, '{}\n', traceback.format_exc())
+	
+	utils.log(True, 'Ready\n')
+
+
+if __name__ == '__main__':
+	__main__()

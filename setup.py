@@ -17,8 +17,8 @@ setup (
 	version = __base__.__envir__.transpilerVersion,
 	description = 'Python to JavaScript transpiler, supporting multiple inheritance and generating lean, highly readable code',
 	long_description = (
-		read ('README.rst') + '\n\n' +
-		read ('license_reference.txt')
+		read('README.rst') + '\n\n' +
+		read('transcrypt', 'license_reference.txt')
 	),
 	keywords = ['python', 'javascript', 'transpiler', 'compiler', 'transcrypt'],
 	url = 'http://www.transcrypt.org',	
