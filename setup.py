@@ -20,20 +20,25 @@ setup (
 		read ('README.rst') + '\n\n' +
 		read ('license_reference.txt')
 	),
-	keywords = ['python', 'javascript', 'transpiler', 'compiler', 'browser', 'web', 'multiple inheritance', 'transcrypt', 'kivy', 'django'],
+	keywords = ['python', 'javascript', 'transpiler', 'compiler', 'transcrypt'],
 	url = 'http://www.transcrypt.org',	
 	license = 'Apache 2.0',
 	author = 'Jacques de Hooge',
 	author_email = 'jacques.de.hooge@qquick.org',
-	packages = ['Transcrypt'],	
+	packages = ['transcrypt'],	
 	include_package_data = True,
+	zip_safe = False,
 	classifiers = [
 		'Development Status :: 3 - Alpha',
 		'Intended Audience :: Developers',
 		'Natural Language :: English',
-		'License :: Other/Proprietary License',
+		'License :: Apache Software License',
+		'Topic :: Software Development :: Compilers',
+		'Topic :: Software Development :: Build Tools',
+		'Topic :: Software Development :: Pre-processors',
 		'Topic :: Software Development :: Libraries :: Python Modules',
 		'Operating System :: OS Independent',
 		'Programming Language :: Python :: 3.5',
+		'Programming Language :: JavaScript'
 	],
 )
