@@ -67,8 +67,11 @@ function f() { /** ... */ }
 		if (type (container) == dict) {
 			return container.py_keys () .indexOf (element) > -1;
 		}
-		else {
+		else if ( 'indexOf' in container ) {
 			return container.indexOf (element) > -1;
+		}
+		else {
+			return element in container;
 		}
 	}
 	__all__.__in__ = __in__;
