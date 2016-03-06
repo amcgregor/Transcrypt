@@ -12,18 +12,18 @@ def read(*paths):
 		return aFile.read()
 
 setup (
-	name = 'Transcrypt',
+	name = 'transplit',
 	version = __base__.__envir__.transpilerVersion,
-	description = 'Python to JavaScript transpiler, supporting multiple inheritance and generating lean, highly readable code',
+	description = "A Pythonic Python to Javascript transpiler derived from Transcrypt.",
 	long_description = (
 		read('README.rst') + '\n\n' +
 		read('transcrypt', 'license_reference.txt')
 	),
-	keywords = ['python', 'javascript', 'transpiler', 'compiler', 'transcrypt'],
-	url = 'http://www.transcrypt.org',	
+	keywords = ['python', 'javascript', 'transpiler', 'compiler'],
+	url = "https://github.com/marrow/transplit,
 	license = 'Apache 2.0',
-	author = 'Jacques de Hooge',
-	author_email = 'jacques.de.hooge@qquick.org',
+	author = 'Alice Bevan-McGregor and Contributors',
+	author_email = 'alice@gothcandy.com',
 	packages = ['transcrypt'],
 	include_package_data = True,
 	zip_safe = False,
