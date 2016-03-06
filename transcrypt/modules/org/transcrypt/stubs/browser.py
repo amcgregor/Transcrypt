@@ -30,4 +30,6 @@ def print (*args):
 # Ignore all pragma's when running CPython
 def __pragma__ (*args):
 	pass
-	
+
+def __include__(*args):
+	pass
