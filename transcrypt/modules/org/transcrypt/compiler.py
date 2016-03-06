@@ -872,8 +872,17 @@ class Generator (ast.NodeVisitor):
 			
 		def include (fileName):
 			searchedIncludePaths = []
+			
+			# First, attempt to find the path relative to the current module.
+			
+			filePath = os.path.join (self.module.metadata.sourceDir, fileName)
+			if os.path.isfile (filePath):
+				return open (filePath) .read ()
+			else:
+				searchedIncludePaths.append (filePath)
+			
 			for searchDir in self.module.program.moduleSearchDirs:
-				filePath = '{}/{}'.format (searchDir, fileName)
+				filePath = os.path.join (searchDir, fileName)
 				if os.path.isfile (filePath):
 					return open (filePath) .read ()
 				else:
