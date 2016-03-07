@@ -88,10 +88,6 @@ and submit a pull request.  This process is beyond the scope of this documentati
 Version History
 ===============
 
-Version 1.0
------------
-
-* Initial release.
 
 
 License
